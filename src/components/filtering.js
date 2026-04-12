@@ -36,7 +36,23 @@ export function initFiltering(elements, indexes) {
         
         let filteredData = [...data];
         
-        // Фильтр по продавцу
+        // Фильтр по дате (частичное совпадение)
+        if (state.date && state.date !== '') {
+            const dateFilter = state.date.toLowerCase();
+            filteredData = filteredData.filter(item => 
+                item.date && item.date.toLowerCase().includes(dateFilter)
+            );
+        }
+        
+        // Фильтр по покупателю (частичное совпадение)
+        if (state.customer && state.customer !== '') {
+            const customerFilter = state.customer.toLowerCase();
+            filteredData = filteredData.filter(item => 
+                item.customer && item.customer.toLowerCase().includes(customerFilter)
+            );
+        }
+        
+        // Фильтр по продавцу (точное совпадение для select)
         if (state.searchBySeller && state.searchBySeller !== '') {
             filteredData = filteredData.filter(item => 
                 item.seller === state.searchBySeller
