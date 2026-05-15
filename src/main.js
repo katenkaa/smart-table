@@ -19,7 +19,7 @@ import {initSearching} from './components/searching.js'
 
 
 // Исходные данные используемые в render()
-const {data, ...indexes} = initData(sourceData);
+const {data, ...indexes} = initData();
 
 /**
  * Сбор и обработка полей из таблицы
@@ -36,7 +36,7 @@ function collectState() {
     page
 };
 }
-const api = initData(sourceData);
+const api = initData();
 /**
  * Перерисовка состояния таблицы при любых изменениях
  * @param {HTMLButtonElement?} action
