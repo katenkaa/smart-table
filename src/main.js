@@ -77,13 +77,17 @@ const applySearching = initSearching('search');
 
 // @todo: инициализация
 const {applyPagination, updatePagination} = initPagination(
-    sampleTable.pagination.elements,             // передаём сюда элементы пагинации, найденные в шаблоне
-    (el, page, isCurrent) => {                    // и колбэк, чтобы заполнять кнопки страниц данными
+    sampleTable.pagination.elements,
+    (el, page, isCurrent) => {
+        el.setAttribute('data-name', 'page');
+
         const input = el.querySelector('input');
         const label = el.querySelector('span');
+
         input.value = page;
         input.checked = isCurrent;
         label.textContent = page;
+
         return el;
     }
 );
