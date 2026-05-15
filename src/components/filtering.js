@@ -1,22 +1,19 @@
-import {createComparison, defaultRules} from "../lib/compare.js";
 
 export function initFiltering(elements, indexes) {
     // @todo: #4.1 — заполнить выпадающие списки опциями
-    Object.keys(indexes).forEach((elementName) => {
-        if (elements[elementName]) {
-            elements[elementName].append(
-                ...Object.values(indexes[elementName]).map((name) => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    option.textContent = name;
-                    return option;
-                })
-            );
-        }
-    });
+    const updateIndexes = (elements, indexes) => {
+        Object.keys(indexes).forEach((elementName) => {
+            elements[elementName].append(...Object.values(indexes[elementName]).map(name => {
+                const el = document.createElement('option');
+                el.textContent = name;
+                el.value = name;
+                return el;
+            }))
+        })
+    }
 
-    return (data, state, action) => {
-        // @todo: #4.2 — обработать очистку поля
+    const applyFiltering = (query, state, action) => {
+        // код с обработкой очистки поля
         if (action && action.name === 'clear') {
             const parent = action.closest('.filter-field');
             const input = parent?.querySelector('select, input');
@@ -29,50 +26,23 @@ export function initFiltering(elements, indexes) {
                 }
             }
         }
+         
 
-        // @todo: #4.5 — отфильтровать данные используя компаратор
-        let filteredData = [...data];
+        // @todo: #4.5 — отфильтровать данные, используя компаратор
+        const filter = {};
+        Object.keys(elements).forEach(key => {
+            if (elements[key]) {
+                if (['INPUT', 'SELECT'].includes(elements[key].tagName) && elements[key].value) { // ищем поля ввода в фильтре с непустыми данными
+                    filter[`filter[${elements[key].name}]`] = elements[key].value; // чтобы сформировать в query вложенный объект фильтра
+                }
+            }
+        })
 
-        // Фильтр по дате
-        if (state.date && state.date !== '') {
-            const dateFilter = state.date.toLowerCase();
-            filteredData = filteredData.filter((item) =>
-                item.date && item.date.toLowerCase().includes(dateFilter)
-            );
-        }
+        return Object.keys(filter).length ? Object.assign({}, query, filter) : query; // если в фильтре что-то добавилось, применим к запросу
+    }
 
-        // Фильтр по покупателю
-        if (state.customer && state.customer !== '') {
-            const customerFilter = state.customer.toLowerCase();
-            filteredData = filteredData.filter((item) =>
-                item.customer && item.customer.toLowerCase().includes(customerFilter)
-            );
-        }
-
-        // Фильтр по продавцу
-        if (state.seller && state.seller !== '') {
-            const sellerFilter = state.seller.toLowerCase();
-            filteredData = filteredData.filter((item) =>
-                item.seller && item.seller.toLowerCase().includes(sellerFilter)
-            );
-        }
-
-        // Фильтр по диапазону total
-        const fromValue = state.totalFrom ? parseFloat(state.totalFrom) : null;
-        const toValue = state.totalTo ? parseFloat(state.totalTo) : null;
-
-        if (fromValue !== null || toValue !== null) {
-            filteredData = filteredData.filter((item) => {
-                const total = parseFloat(item.total);
-
-                if (isNaN(total)) return false;
-                if (fromValue !== null && total < fromValue) return false;
-                if (toValue !== null && total > toValue) return false;
-
-                return true;
-            });
-        }
-
-        return filteredData;
-    };
-}
+    return {
+        updateIndexes,
+        applyFiltering
+    }
+} 
