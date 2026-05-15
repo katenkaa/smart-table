@@ -42,20 +42,16 @@ const api = initData();
  * @param {HTMLButtonElement?} action
  */
 async function render(action) {
-    let state = collectState(); // состояние полей из таблицы
-    let query = {}; // здесь будут формироваться параметры запроса
-    // другие apply*
-    // result = applySearching(result, state, action);
-    // result = applyFiltering(result, state, action);
-    // result = applySorting(result, state, action);
-    query = applyPagination(query, state, action); // обновляем query
-    query = applyFiltering(query, state, action); // result заменяем на query
+    let state = collectState(); 
+    let query = {}; 
+    query = applyPagination(query, state, action); 
+    query = applyFiltering(query, state, action); 
     query = applySearching(query, state, action);
     query = applySorting(query, state, action);
 
-    const { total, items } = await api.getRecords(query); // запрашиваем данные с собранными параметрами
+    const { total, items } = await api.getRecords(query); 
 
-    updatePagination(total, query); // перерисовываем пагинатор
+    updatePagination(total, query); 
     sampleTable.render(items);
 }
 
@@ -107,3 +103,4 @@ async function init() {
 
 
 init().then(render)
+

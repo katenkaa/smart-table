@@ -48,20 +48,23 @@ export function initTable(settings, onAction) {
     });
 
     const render = (data) => {
-        // @todo: #1.1 — преобразовать данные в массив строк на основе шаблона rowTemplate
-        const nextRows = data.map(item => { 
-            const row = cloneTemplate(rowTemplate);
-            if (row.elements) {
-                Object.keys(item).forEach(key => {
-                    if (key in row.elements && row.elements[key]) {
-                        row.elements[key].textContent = item[key];
-                    }
-                });
+    // @todo: #1.1 — преобразовать данные в массив строк на основе шаблона rowTemplate
+    const nextRows = data.map(item => { 
+        const row = cloneTemplate(rowTemplate);
+        
+        // Используем querySelector для поиска по data-name атрибутам
+        Object.keys(item).forEach(key => {
+            // Ищем элемент с data-name="key"
+            const element = row.container.querySelector(`[data-name="${key}"]`);
+            if (element) {
+                element.textContent = item[key];
             }
-            return row.container;
         });
-        root.elements.rows.replaceChildren(...nextRows);
-    };
+        
+        return row.container;
+    });
+    root.elements.rows.replaceChildren(...nextRows);
+};
 
     return {...root, render};
 }
